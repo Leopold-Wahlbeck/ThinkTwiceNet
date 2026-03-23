@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Data (IMPORTANT)
+data/raw/
+data/processed/
+
+# Outputs (IMPORTANT)
+outputs/logs/
+outputs/models/
+outputs/tmp/
+outputs/preds/
+
+# Misc
+*.log
