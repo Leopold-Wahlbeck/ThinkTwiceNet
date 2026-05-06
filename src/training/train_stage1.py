@@ -9,6 +9,7 @@ from sklearn.metrics import accuracy_score, classification_report
 
 from src.data.loaders import load_cifar10_datasets, dataset_to_numpy
 
+'''Trains a logistic regression model on CIFAR-10 as a baseline for Stage 1'''
 
 def train_logistic_regression(random_state: int = 1337) -> None:
     print("Loading CIFAR-10 data...")
