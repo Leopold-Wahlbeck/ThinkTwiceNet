@@ -11,6 +11,8 @@ from torchvision import datasets, transforms
 from src.data.splits import make_train_val_indices
 
 
+'''Loading CIFAR-10 and preparing for models'''
+
 @dataclass
 class DataConfig:
     data_dir: str = "data/raw"

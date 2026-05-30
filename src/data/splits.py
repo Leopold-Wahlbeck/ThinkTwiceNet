@@ -4,6 +4,7 @@ from typing import Tuple
 import numpy as np
 from sklearn.model_selection import train_test_split
 
+'''Splits the dataset into training and validation sets'''
 
 def make_train_val_indices(
     n_samples: int,
