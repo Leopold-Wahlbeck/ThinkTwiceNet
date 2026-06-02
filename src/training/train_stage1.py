@@ -93,6 +93,8 @@ def train_logistic_regression(random_state: int = 1337) -> None:
 
     print(f"Saved validation predictions to: {preds_path}")
 
+def save_results():
+    pass
 
 def main() -> None:
     parser = argparse.ArgumentParser()
