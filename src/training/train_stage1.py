@@ -73,7 +73,7 @@ def train_logistic_regression(random_state: int = 1337) -> None:
 
     save_confidence_threshold_results(
         confidence_results,
-        output_path=Path("results/stage1_confidence_thresholds.csv"), #Maybe we change this so we can choose where to save it?
+        output_path=Path("results/stage1_logistic_confidence_thresholds.csv"), #Maybe we change this so we can choose where to save it?
     )
 
 
