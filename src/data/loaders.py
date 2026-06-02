@@ -27,7 +27,6 @@ class FlattenTransform:
     def __call__(self, x: torch.Tensor) -> torch.Tensor:
         return x.view(-1)
 
-
 def get_cifar10_transforms(flatten: bool = False) -> transforms.Compose:
     transform_list = [transforms.ToTensor()]
 

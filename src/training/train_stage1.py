@@ -3,15 +3,17 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-import numpy as np
-
 import joblib
+import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
 
 from src.data.loaders import load_cifar10_datasets, dataset_to_numpy
+from src.evaluation.confidence import (
+    evaluate_confidence_thresholds,
+    print_confidence_threshold_results,
+)
 
-'''Trains a logistic regression model on CIFAR-10 as a baseline for Stage 1'''
 
 def train_logistic_regression(random_state: int = 1337) -> None:
     print("Loading CIFAR-10 data...")
@@ -35,6 +37,7 @@ def train_logistic_regression(random_state: int = 1337) -> None:
         tol=1e-3,
         solver="lbfgs",
         n_jobs=-1,
+        random_state=random_state,
     )
 
     model.fit(X_train, y_train)
@@ -42,19 +45,49 @@ def train_logistic_regression(random_state: int = 1337) -> None:
     print("Evaluating...")
 
     y_pred = model.predict(X_val)
+    y_proba = model.predict_proba(X_val)
+    confidence = np.max(y_proba, axis=1)
+
     acc = accuracy_score(y_val, y_pred)
 
     print(f"\nValidation accuracy: {acc:.4f}")
+
     print("\nClassification report:")
     print(classification_report(y_val, y_pred))
 
-    output_dir = Path("outputs/models")
-    output_dir.mkdir(parents=True, exist_ok=True)
+    thresholds = [0.50, 0.60, 0.70, 0.80, 0.90]
 
-    model_path = output_dir / "stage1_logistic_regression.joblib"
+    confidence_results = evaluate_confidence_thresholds(
+        y_true=y_val,
+        y_pred=y_pred,
+        confidence=confidence,
+        thresholds=thresholds,
+    )
+
+    print_confidence_threshold_results(confidence_results)
+
+    output_model_dir = Path("outputs/models")
+    output_model_dir.mkdir(parents=True, exist_ok=True)
+
+    model_path = output_model_dir / "stage1_logistic_regression.joblib"
     joblib.dump(model, model_path)
 
     print(f"\nSaved model to: {model_path}")
+
+    output_preds_dir = Path("outputs/preds")
+    output_preds_dir.mkdir(parents=True, exist_ok=True)
+
+    preds_path = output_preds_dir / "stage1_val_predictions.npz"
+
+    np.savez(
+        preds_path,
+        y_true=y_val,
+        y_pred=y_pred,
+        y_proba=y_proba,
+        confidence=confidence,
+    )
+
+    print(f"Saved validation predictions to: {preds_path}")
 
 
 def main() -> None:
