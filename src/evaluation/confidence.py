@@ -72,6 +72,7 @@ def print_confidence_threshold_results(results: list[dict[str, float]]) -> None:
         )
 
 def save_confidence_threshold_results(results: list[dict[str, float]], output_path: Path) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=results[0].keys())
         writer.writeheader()
