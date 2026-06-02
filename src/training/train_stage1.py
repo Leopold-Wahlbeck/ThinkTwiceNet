@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+import numpy as np
+
 import joblib
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
