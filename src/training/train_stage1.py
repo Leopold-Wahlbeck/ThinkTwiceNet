@@ -25,6 +25,9 @@ def train_logistic_regression(random_state: int = 1337) -> None:
         flatten_for_stage1=True,
     )
 
+    class_names = train_dataset.dataset.classes
+
+
     print("Converting datasets to NumPy...")
 
     X_train, y_train = dataset_to_numpy(train_dataset)
@@ -52,8 +55,9 @@ def train_logistic_regression(random_state: int = 1337) -> None:
 
     print(f"\nValidation accuracy: {acc:.4f}")
 
+
     print("\nClassification report:")
-    print(classification_report(y_val, y_pred))
+    print(classification_report(y_val, y_pred, target_names=class_names))
 
     thresholds = [0.50, 0.60, 0.70, 0.80, 0.90]
 
