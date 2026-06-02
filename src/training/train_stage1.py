@@ -12,6 +12,7 @@ from src.data.loaders import load_cifar10_datasets, dataset_to_numpy
 from src.evaluation.confidence import (
     evaluate_confidence_thresholds,
     print_confidence_threshold_results,
+    save_confidence_threshold_results,
 )
 
 
@@ -70,6 +71,12 @@ def train_logistic_regression(random_state: int = 1337) -> None:
 
     print_confidence_threshold_results(confidence_results)
 
+    save_confidence_threshold_results(
+        confidence_results,
+        output_path=Path("results/stage1_confidence_thresholds.csv"), #Maybe we change this so we can choose where to save it?
+    )
+
+
     output_model_dir = Path("outputs/models")
     output_model_dir.mkdir(parents=True, exist_ok=True)
 
@@ -93,8 +100,6 @@ def train_logistic_regression(random_state: int = 1337) -> None:
 
     print(f"Saved validation predictions to: {preds_path}")
 
-def save_results():
-    pass
 
 def main() -> None:
     parser = argparse.ArgumentParser()
