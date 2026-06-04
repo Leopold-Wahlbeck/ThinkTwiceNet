@@ -25,5 +25,8 @@ outputs/models/
 outputs/tmp/
 outputs/preds/
 
+# Results (IMPORTANT)
+results/
+
 # Misc
 *.log
