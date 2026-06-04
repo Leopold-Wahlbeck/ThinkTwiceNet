@@ -1,4 +1,5 @@
 from pathlib import Path
+import argparse
 
 import numpy as np
 import torch
@@ -24,6 +25,13 @@ def evaluate_pretrained_cnn(split: str = "val"):
 
     _, val_loader, test_loader = create_dataloaders(config)
 
+    if split == "val":
+        eval_loader = val_loader
+    elif split == "test":
+        eval_loader = test_loader
+    else:
+        raise ValueError("split must be either 'val' or 'test'")
+
     model = load_pretrained_cnn_model()
     model.to(device)
     model.eval()
@@ -33,10 +41,10 @@ def evaluate_pretrained_cnn(split: str = "val"):
     all_y_proba = []
 
     with torch.no_grad():
-        for images, labels in val_loader:
+        for images, labels in eval_loader:
             images = images.to(device)
             labels = labels.to(device)
-            
+
             logits = model(images)
             probabilities = torch.softmax(logits, dim=1)
             predictions = torch.argmax(probabilities, dim=1)
@@ -50,14 +58,14 @@ def evaluate_pretrained_cnn(split: str = "val"):
     y_proba = np.concatenate(all_y_proba)
 
     acc = accuracy_score(y_true, y_pred)
-    print(f"Stage 2 pretrained CNN validation accuracy: {acc:.4f}")
+    print(f"Stage 2 pretrained CNN {split} accuracy: {acc:.4f}")
     print("Classification report:")
     print(classification_report(y_true, y_pred))
 
     output_dir = Path("outputs/preds")
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_path = output_dir / "stage2_pretrained_cnn_val_predictions.npz"  
+    output_path = output_dir / f"stage2_pretrained_cnn_{split}_predictions.npz"
 
     np.savez(
         output_path,
@@ -65,10 +73,22 @@ def evaluate_pretrained_cnn(split: str = "val"):
         y_pred=y_pred,
         y_proba=y_proba,
     )
-    print(f"Saved validation predictions to: {output_path}")
+
+    print(f"Saved {split} predictions to: {output_path}")
+
 
 def main() -> None:
-    evaluate_pretrained_cnn()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--split",
+        choices=["val", "test"],
+        default="val",
+        help="Dataset split to evaluate on.",
+    )
+    args = parser.parse_args()
 
-if __name__ == "__main__":    
+    evaluate_pretrained_cnn(split=args.split)
+
+
+if __name__ == "__main__":
     main()
