@@ -21,14 +21,26 @@ class DataConfig:
     val_size: float = 0.15
     random_state: int = 1337
     flatten_for_stage1: bool = False
+    normalize: bool = False
 
 
 class FlattenTransform:
     def __call__(self, x: torch.Tensor) -> torch.Tensor:
         return x.view(-1)
 
-def get_cifar10_transforms(flatten: bool = False) -> transforms.Compose:
+def get_cifar10_transforms(
+    flatten: bool = False,
+    normalize: bool = False,
+) -> transforms.Compose:
     transform_list = [transforms.ToTensor()]
+
+    if normalize:
+        transform_list.append(
+            transforms.Normalize(
+                mean=(0.4914, 0.4822, 0.4465),
+                std=(0.2470, 0.2435, 0.2616),
+            )
+        )
 
     if flatten:
         transform_list.append(FlattenTransform())
@@ -41,10 +53,18 @@ def load_cifar10_datasets(
     val_size: float = 0.15,
     random_state: int = 1337,
     flatten_for_stage1: bool = False,
+    normalize: bool = False,
 ) -> Tuple[Subset, Subset, datasets.CIFAR10]:
    
-    train_transform = get_cifar10_transforms(flatten=flatten_for_stage1)
-    test_transform = get_cifar10_transforms(flatten=flatten_for_stage1)
+    train_transform = get_cifar10_transforms(
+        flatten=flatten_for_stage1,
+        normalize=normalize,
+    )
+
+    test_transform = get_cifar10_transforms(
+        flatten=flatten_for_stage1,
+        normalize=normalize,
+    )
 
     full_train_dataset = datasets.CIFAR10(
         root=data_dir,
@@ -89,6 +109,7 @@ def create_dataloaders(
         val_size=config.val_size,
         random_state=config.random_state,
         flatten_for_stage1=config.flatten_for_stage1,
+        normalize=config.normalize,
     )
 
     train_loader = DataLoader(
